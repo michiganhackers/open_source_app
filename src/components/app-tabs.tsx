@@ -1,30 +1,35 @@
-
 import { Tabs } from 'expo-router';
-import { useColorScheme } from 'react-native';
 
-import { Colors } from '@/constants/theme';
+import { AppIcon } from '@/components/app-icon';
+import { useTheme } from '@/hooks/use-theme';
 
 export default function AppTabs() {
-  const scheme = useColorScheme();
-  const colors = Colors[scheme === 'dark' ? 'dark' : 'light'];
+  const colors = useTheme();
 
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: colors.text,
+        tabBarActiveTintColor: colors.primary,
+        tabBarInactiveTintColor: colors.textSecondary,
         tabBarStyle: {
           backgroundColor: colors.background,
+          borderTopColor: colors.border,
         },
-      }}
-    >
+      }}>
       <Tabs.Screen
         name="index"
-        options={{ title: 'Home' }}
+        options={{
+          title: 'Share',
+          tabBarIcon: ({ color }) => <AppIcon name="share" color={color} size={24} />,
+        }}
       />
       <Tabs.Screen
-        name="explore"
-        options={{ title: 'Explore' }}
+        name="history"
+        options={{
+          title: 'History',
+          tabBarIcon: ({ color }) => <AppIcon name="history" color={color} size={24} />,
+        }}
       />
     </Tabs>
   );

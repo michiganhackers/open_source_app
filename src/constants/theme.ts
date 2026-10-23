@@ -9,18 +9,31 @@ import { Platform } from 'react-native';
 
 export const Colors = {
   light: {
-    text: '#000000',
-    background: '#ffffff',
-    backgroundElement: '#F0F0F3',
-    backgroundSelected: '#E0E1E6',
-    textSecondary: '#60646C',
+    text: '#1A1A1A',
+    background: '#FFFFFF',
+    backgroundElement: '#FFF4EB',
+    backgroundSelected: '#FFE3CC',
+    textSecondary: '#6B6B6B',
+    // #E06A00 keeps white bold button labels readable (WCAG large-text contrast).
+    primary: '#E06A00',
+    primaryPressed: '#C25B00',
+    onPrimary: '#FFFFFF',
+    border: '#F1D9C4',
+    success: '#1F9D55',
+    danger: '#D93025',
   },
   dark: {
-    text: '#ffffff',
-    background: '#000000',
-    backgroundElement: '#212225',
-    backgroundSelected: '#2E3135',
+    text: '#FFFFFF',
+    background: '#0F0F10',
+    backgroundElement: '#1C1C1E',
+    backgroundSelected: '#2A2A2D',
     textSecondary: '#B0B4BA',
+    primary: '#FF8C1A',
+    primaryPressed: '#FFA347',
+    onPrimary: '#1A1A1A',
+    border: '#333336',
+    success: '#34C77B',
+    danger: '#FF6B5E',
   },
 } as const;
 

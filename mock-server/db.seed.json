@@ -1,0 +1,115 @@
+{
+  "transmissions": [
+    {
+      "id": "seed-01",
+      "direction": "sent",
+      "payload": "Meet at the Diag at 6pm for the hack night kickoff!",
+      "kind": "text",
+      "createdAt": "2026-10-22T22:45:00.000Z",
+      "durationMs": 3060,
+      "status": "completed",
+      "deviceId": "seed-device-a",
+      "origin": "local"
+    },
+    {
+      "id": "seed-02",
+      "direction": "received",
+      "payload": "https://docs.expo.dev",
+      "kind": "url",
+      "createdAt": "2026-10-22T22:30:00.000Z",
+      "durationMs": 1500,
+      "status": "completed",
+      "deviceId": "seed-device-b",
+      "origin": "received"
+    },
+    {
+      "id": "seed-03",
+      "direction": "sent",
+      "payload": "https://github.com/expo/expo",
+      "kind": "url",
+      "createdAt": "2026-10-22T21:10:00.000Z",
+      "durationMs": 1680,
+      "status": "completed",
+      "deviceId": "seed-device-a",
+      "origin": "local"
+    },
+    {
+      "id": "seed-04",
+      "direction": "received",
+      "payload": "Wifi is slow in the basement, try the 2nd floor",
+      "kind": "text",
+      "createdAt": "2026-10-22T20:05:00.000Z",
+      "durationMs": 2820,
+      "status": "completed",
+      "deviceId": "seed-device-c",
+      "origin": "received"
+    },
+    {
+      "id": "seed-05",
+      "direction": "sent",
+      "payload": "Pizza is here",
+      "kind": "text",
+      "createdAt": "2026-10-22T19:40:00.000Z",
+      "durationMs": 1500,
+      "status": "failed",
+      "deviceId": "seed-device-a",
+      "origin": "local"
+    },
+    {
+      "id": "seed-06",
+      "direction": "received",
+      "payload": "http://example.com/insecure",
+      "kind": "url",
+      "createdAt": "2026-10-22T18:15:00.000Z",
+      "durationMs": 1620,
+      "status": "completed",
+      "deviceId": "seed-device-d",
+      "origin": "received"
+    },
+    {
+      "id": "seed-07",
+      "direction": "sent",
+      "payload": "Slides: https://www.umich.edu",
+      "kind": "text",
+      "createdAt": "2026-10-21T23:00:00.000Z",
+      "durationMs": 1740,
+      "status": "completed",
+      "deviceId": "seed-device-a",
+      "origin": "local"
+    },
+    {
+      "id": "seed-08",
+      "direction": "received",
+      "payload": "javascript:alert(1)",
+      "kind": "text",
+      "createdAt": "2026-10-21T17:20:00.000Z",
+      "durationMs": 1500,
+      "status": "completed",
+      "deviceId": "seed-device-e",
+      "origin": "received"
+    },
+    {
+      "id": "seed-09",
+      "direction": "received",
+      "payload": "Room 1690 is open for teams",
+      "kind": "text",
+      "createdAt": "2026-10-20T15:00:00.000Z",
+      "durationMs": 1620,
+      "status": "completed",
+      "deviceId": "seed-device-b",
+      "origin": "received"
+    },
+    {
+      "id": "seed-10",
+      "direction": "sent",
+      "payload": "Testing 1 2 3",
+      "kind": "text",
+      "createdAt": "2026-10-19T12:00:00.000Z",
+      "durationMs": 1500,
+      "status": "completed",
+      "deviceId": "seed-device-a",
+      "origin": "local"
+    }
+  ],
+  "broadcasts": []
+}
