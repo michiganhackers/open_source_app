@@ -1,12 +1,9 @@
 import * as Device from 'expo-device';
-import { Platform, StyleSheet } from 'react-native';
+import { Image, Platform, Pressable, StyleSheet, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { AnimatedIcon } from '@/components/animated-icon';
-import { HintRow } from '@/components/hint-row';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { WebBadge } from '@/components/web-badge';
 import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
 
 function getDevMenuHint() {
@@ -28,71 +25,137 @@ function getDevMenuHint() {
   );
 }
 
+
+
 export default function HomeScreen() {
   return (
     <ThemedView style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
-        <ThemedView style={styles.heroSection}>
-          <AnimatedIcon />
-          <ThemedText type="title" style={styles.title}>
-            Welcome to&nbsp;Expo
+        {/* Large logo centered at the top */}
+        <View style={styles.heroSection}>
+  <View style={styles.logoContainer}>
+    <Image
+      source={require('../../assets/images/tentativelogo.png')}
+      style={styles.logo}
+      resizeMode="cover"
+    />
+  </View>
+
+  <ThemedText type="title" style={styles.title}>
+    Audio QR
+  </ThemedText>
+</View>
+
+        {/* Generate audio section centered on the page */}
+        <View style={styles.mainContent}>
+          <ThemedText style={styles.label}>
+            Generate link:
           </ThemedText>
-        </ThemedView>
 
-        <ThemedText type="code" style={styles.code}>
-          get started
-        </ThemedText>
-
-        <ThemedView type="backgroundElement" style={styles.stepContainer}>
-          <HintRow
-            title="Try editing"
-            hint={<ThemedText type="code">src/app/index.tsx</ThemedText>}
+          <TextInput
+            style={styles.input}
+            placeholder="Link you want to encode"
+            placeholderTextColor="#888888"
+            autoCapitalize="none"
+            keyboardType="url"
           />
-          <HintRow title="Dev tools" hint={getDevMenuHint()} />
-          <HintRow
-            title="Fresh start"
-            hint={<ThemedText type="code">npm run reset-project</ThemedText>}
-          />
-        </ThemedView>
 
-        {Platform.OS === 'web' && <WebBadge />}
+          <Pressable
+            style={styles.customButton}
+            onPress={() => console.log('Generate Audio QR clicked')}
+          >
+            <ThemedText style={styles.buttonText}>
+              Generate Audio QR
+            </ThemedText>
+          </Pressable>
+        </View>
       </SafeAreaView>
     </ThemedView>
   );
 }
 
+
+
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    flexDirection: 'row',
-  },
-  safeArea: {
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    alignItems: 'center',
-    gap: Spacing.three,
-    paddingBottom: BottomTabInset + Spacing.three,
-    maxWidth: MaxContentWidth,
-  },
-  heroSection: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    gap: Spacing.four,
-  },
-  title: {
-    textAlign: 'center',
-  },
-  code: {
-    textTransform: 'uppercase',
-  },
-  stepContainer: {
-    gap: Spacing.three,
-    alignSelf: 'stretch',
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.four,
-    borderRadius: Spacing.four,
-  },
+  
+
+container: {
+  flex: 1,
+  justifyContent: 'center',
+  flexDirection: 'row',
+},
+
+safeArea: {
+  flex: 1,
+  paddingHorizontal: Spacing.four,
+  alignItems: 'center',
+  paddingBottom: BottomTabInset + Spacing.three,
+  maxWidth: MaxContentWidth,
+  width: '100%',
+},
+
+heroSection: {
+  alignItems: 'center',
+  justifyContent: 'center',
+  width: '100%',
+  paddingTop: 16,
+  gap: 12,
+},
+
+logoContainer: {
+  width: 180,
+  height: 180,
+  borderRadius: 40,
+  overflow: 'hidden',
+},
+
+logo: {
+  width: '100%',
+  height: '100%',
+},
+
+title: {
+  textAlign: 'center',
+},
+
+mainContent: {
+  flex: 1,
+  justifyContent: 'center',
+  alignItems: 'center',
+  width: '100%',
+  gap: 16,
+},
+
+label: {
+  fontSize: 18,
+  fontWeight: '600',
+  alignSelf: 'stretch',
+},
+
+input: {
+  width: '100%',
+  minHeight: 50,
+  borderWidth: 1,
+  borderColor: '#CCCCCC',
+  borderRadius: 12,
+  paddingHorizontal: 14,
+  fontSize: 16,
+  color: '#222222',
+  backgroundColor: '#FFFFFF',
+},
+
+customButton: {
+  backgroundColor: '#6C5CE7',
+  paddingVertical: 16,
+  paddingHorizontal: 24,
+  borderRadius: 12,
+  alignItems: 'center',
+  width: '100%',
+},
+
+buttonText: {
+  color: '#FFFFFF',
+  fontSize: 16,
+  fontWeight: 'bold',
+},
 });
