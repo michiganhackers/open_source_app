@@ -1,33 +1,33 @@
-import { useEffect, useState } from 'react';
-import { AccessibilityInfo, StyleSheet, View } from 'react-native';
+import { useEffect, useState } from "react";
+import { AccessibilityInfo, Button, StyleSheet, View } from "react-native";
 
-import { ConfirmSheet, type ConfirmRequest } from '@/components/confirm-sheet';
-import { LinkNote } from '@/components/link-note';
-import { PayloadInput } from '@/components/payload-input';
-import { PrimaryButton } from '@/components/primary-button';
-import { PulseRing } from '@/components/pulse-ring';
-import { ScreenContainer } from '@/components/screen-container';
-import { SegmentedControl } from '@/components/segmented-control';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Waveform } from '@/components/waveform';
-import { MAX_PAYLOAD_LENGTH } from '@/constants/limits';
-import { Spacing } from '@/constants/theme';
-import { useBroadcast } from '@/hooks/use-broadcast';
-import { useListen, type ReceivedMessage } from '@/hooks/use-listen';
-import { usePayloadActions } from '@/hooks/use-payload-actions';
-import { useTheme } from '@/hooks/use-theme';
-import { useShareDraft, type ShareDraft } from '@/state/share-draft';
-import type { TransmissionOrigin } from '@/types/transmission';
-import { formatRelativeTime } from '@/utils/format';
-import { getSafeUrl, sanitizePayload } from '@/utils/payload';
-import { findSensitiveReasons } from '@/utils/sensitive';
+import { ConfirmSheet, type ConfirmRequest } from "@/components/confirm-sheet";
+import { LinkNote } from "@/components/link-note";
+import { PayloadInput } from "@/components/payload-input";
+import { PrimaryButton } from "@/components/primary-button";
+import { PulseRing } from "@/components/pulse-ring";
+import { ScreenContainer } from "@/components/screen-container";
+import { SegmentedControl } from "@/components/segmented-control";
+import { ThemedText } from "@/components/themed-text";
+import { ThemedView } from "@/components/themed-view";
+import { Waveform } from "@/components/waveform";
+import { MAX_PAYLOAD_LENGTH } from "@/constants/limits";
+import { Spacing } from "@/constants/theme";
+import { useBroadcast } from "@/hooks/use-broadcast";
+import { useListen, type ReceivedMessage } from "@/hooks/use-listen";
+import { usePayloadActions } from "@/hooks/use-payload-actions";
+import { useTheme } from "@/hooks/use-theme";
+import { useShareDraft, type ShareDraft } from "@/state/share-draft";
+import type { TransmissionOrigin } from "@/types/transmission";
+import { formatRelativeTime } from "@/utils/format";
+import { getSafeUrl, sanitizePayload } from "@/utils/payload";
+import { findSensitiveReasons } from "@/utils/sensitive";
 
-type Mode = 'send' | 'receive';
+type Mode = "send" | "receive";
 
 const MODE_OPTIONS = [
-  { value: 'send', label: 'Send' },
-  { value: 'receive', label: 'Receive' },
+  { value: "send", label: "Send" },
+  { value: "receive", label: "Receive" },
 ] as const;
 
 export default function ShareScreen() {
@@ -37,15 +37,21 @@ export default function ShareScreen() {
   const { draft, clearDraft } = useShareDraft();
   const { copy, requestOpen, linkSheet } = usePayloadActions();
 
-  const [mode, setMode] = useState<Mode>('send');
-  const [text, setText] = useState('');
-  const [origin, setOrigin] = useState<TransmissionOrigin>('local');
-  const [sensitiveCheck, setSensitiveCheck] = useState<ConfirmRequest | null>(null);
+  const [mode, setMode] = useState<Mode>("send");
+  const [text, setText] = useState("");
+  const [origin, setOrigin] = useState<TransmissionOrigin>("local");
+  const [sensitiveCheck, setSensitiveCheck] = useState<ConfirmRequest | null>(
+    null,
+  );
 
-  const isBroadcasting = broadcast.status === 'broadcasting';
-  const isListening = listen.status === 'listening';
+  const isBroadcasting = broadcast.status === "broadcasting";
+  const isListening = listen.status === "listening";
   const busy = isBroadcasting || isListening;
-  const statusLabel = isBroadcasting ? 'Broadcasting' : isListening ? 'Listening' : 'Idle';
+  const statusLabel = isBroadcasting
+    ? "Broadcasting"
+    : isListening
+      ? "Listening"
+      : "Idle";
 
   // Apply a re-broadcast draft during render (React's "adjust state on prop change" pattern),
   // then clear it from the shared store so it isn't re-applied on remount.
@@ -54,7 +60,7 @@ export default function ShareScreen() {
     setAppliedDraft(draft);
     setText(draft.payload);
     setOrigin(draft.origin);
-    setMode('send');
+    setMode("send");
   }
   useEffect(() => {
     if (draft) clearDraft();
@@ -65,12 +71,14 @@ export default function ShareScreen() {
   }, [statusLabel]);
 
   const trimmedLength = text.trim().length;
-  const canBroadcast = trimmedLength > 0 && trimmedLength <= MAX_PAYLOAD_LENGTH && !busy;
+  const canBroadcast =
+    trimmedLength > 0 && trimmedLength <= MAX_PAYLOAD_LENGTH && !busy;
 
   const onChangeText = (value: string) => {
     setText(value);
-    if (value.trim().length === 0) setOrigin('local');
-    if (broadcast.status === 'sent' || broadcast.status === 'error') broadcast.reset();
+    if (value.trim().length === 0) setOrigin("local");
+    if (broadcast.status === "sent" || broadcast.status === "error")
+      broadcast.reset();
   };
 
   const onBroadcastPress = () => {
@@ -83,16 +91,20 @@ export default function ShareScreen() {
     const reasons = findSensitiveReasons(payload);
     if (reasons.length > 0) {
       setSensitiveCheck({
-        title: 'This might be private',
+        title: "This might be private",
         message:
-          'Anyone nearby can hear and decode a broadcast. Make sure this is safe to share publicly.',
+          "Anyone nearby can hear and decode a broadcast. Make sure this is safe to share publicly.",
         reasons,
-        confirmLabel: 'Broadcast anyway',
+        confirmLabel: "Broadcast anyway",
       });
       return;
     }
     broadcast.start(payload, origin);
   };
+
+  async function testGGWAVE() {
+    console.log("Testing GGWAVE");
+  }
 
   return (
     <ScreenContainer>
@@ -110,10 +122,12 @@ export default function ShareScreen() {
             styles.statusPill,
             { backgroundColor: busy ? theme.primary : theme.backgroundElement },
           ]}
-          accessibilityLabel={`Status: ${statusLabel}`}>
+          accessibilityLabel={`Status: ${statusLabel}`}
+        >
           <ThemedText
             type="smallBold"
-            style={{ color: busy ? theme.onPrimary : theme.textSecondary }}>
+            style={{ color: busy ? theme.onPrimary : theme.textSecondary }}
+          >
             {statusLabel}
           </ThemedText>
         </View>
@@ -127,28 +141,43 @@ export default function ShareScreen() {
         accessibilityLabel="Share mode"
       />
 
-      {mode === 'send' ? (
+      {mode === "send" ? (
         <ThemedView type="backgroundElement" style={styles.panel}>
-          <PayloadInput value={text} onChange={onChangeText} editable={!isBroadcasting} />
-          {origin === 'received' && (
+          <PayloadInput
+            value={text}
+            onChange={onChangeText}
+            editable={!isBroadcasting}
+          />
+          {origin === "received" && (
             <ThemedText type="small" style={{ color: theme.danger }}>
               This text came from an unverified sender.
             </ThemedText>
           )}
           <Waveform active={isBroadcasting} progress={broadcast.progress} />
           <PrimaryButton
-            label={isBroadcasting ? 'Stop' : broadcast.status === 'sent' ? 'Sent!' : 'Broadcast'}
-            icon={isBroadcasting ? 'close' : 'share'}
-            variant={isBroadcasting ? 'outline' : 'filled'}
+            label={
+              isBroadcasting
+                ? "Stop"
+                : broadcast.status === "sent"
+                  ? "Sent!"
+                  : "Broadcast"
+            }
+            icon={isBroadcasting ? "close" : "share"}
+            variant={isBroadcasting ? "outline" : "filled"}
             size="large"
             disabled={!isBroadcasting && !canBroadcast}
             onPress={onBroadcastPress}
-            accessibilityLabel={isBroadcasting ? 'Stop broadcasting' : 'Broadcast message'}
+            accessibilityLabel={
+              isBroadcasting ? "Stop broadcasting" : "Broadcast message"
+            }
           />
         </ThemedView>
       ) : (
-        <ThemedView type="backgroundElement" style={[styles.panel, styles.receivePanel]}>
-          {listen.status === 'received' && listen.received ? (
+        <ThemedView
+          type="backgroundElement"
+          style={[styles.panel, styles.receivePanel]}
+        >
+          {listen.status === "received" && listen.received ? (
             <ReceivedCard
               message={listen.received}
               onCopy={() => copy(listen.received!.payload)}
@@ -161,22 +190,31 @@ export default function ShareScreen() {
               <PulseRing active={isListening} />
               <ThemedText
                 type="smallBold"
-                themeColor={listen.status === 'error' ? undefined : 'textSecondary'}
-                style={listen.status === 'error' ? { color: theme.danger } : undefined}
-                accessibilityLiveRegion="polite">
+                themeColor={
+                  listen.status === "error" ? undefined : "textSecondary"
+                }
+                style={
+                  listen.status === "error"
+                    ? { color: theme.danger }
+                    : undefined
+                }
+                accessibilityLiveRegion="polite"
+              >
                 {isListening
                   ? `Listening... ${listen.secondsLeft}s`
-                  : listen.status === 'error'
+                  : listen.status === "error"
                     ? "Couldn't reach the mock server. Try again."
-                    : 'Tap Listen to receive nearby messages'}
+                    : "Tap Listen to receive nearby messages"}
               </ThemedText>
               <PrimaryButton
-                label={isListening ? 'Stop' : 'Listen'}
-                icon={isListening ? 'close' : 'listen'}
-                variant={isListening ? 'outline' : 'filled'}
+                label={isListening ? "Stop" : "Listen"}
+                icon={isListening ? "close" : "listen"}
+                variant={isListening ? "outline" : "filled"}
                 size="large"
                 onPress={isListening ? listen.stop : listen.start}
-                accessibilityLabel={isListening ? 'Stop listening' : 'Start listening'}
+                accessibilityLabel={
+                  isListening ? "Stop listening" : "Start listening"
+                }
                 style={styles.wideButton}
               />
             </>
@@ -219,7 +257,12 @@ function ReceivedCard({
       <ThemedText type="smallBold" style={{ color: theme.primary }}>
         Message received
       </ThemedText>
-      <View style={[styles.payloadBox, { backgroundColor: theme.background, borderColor: theme.border }]}>
+      <View
+        style={[
+          styles.payloadBox,
+          { backgroundColor: theme.background, borderColor: theme.border },
+        ]}
+      >
         <ThemedText selectable style={styles.receivedPayload}>
           {message.payload}
         </ThemedText>
@@ -229,12 +272,34 @@ function ReceivedCard({
       </ThemedText>
       <LinkNote payload={message.payload} />
       <View style={styles.receivedActions}>
-        <PrimaryButton label="Copy" icon="copy" variant="outline" size="small" onPress={onCopy} />
+        <PrimaryButton
+          label="Copy"
+          icon="copy"
+          variant="outline"
+          size="small"
+          onPress={onCopy}
+        />
         {canOpen && (
-          <PrimaryButton label="Open link" icon="open" variant="outline" size="small" onPress={onOpen} />
+          <PrimaryButton
+            label="Open link"
+            icon="open"
+            variant="outline"
+            size="small"
+            onPress={onOpen}
+          />
         )}
-        <PrimaryButton label="Listen again" icon="listen" size="small" onPress={onListenAgain} />
-        <PrimaryButton label="Dismiss" variant="ghost" size="small" onPress={onDismiss} />
+        <PrimaryButton
+          label="Listen again"
+          icon="listen"
+          size="small"
+          onPress={onListenAgain}
+        />
+        <PrimaryButton
+          label="Dismiss"
+          variant="ghost"
+          size="small"
+          onPress={onDismiss}
+        />
       </View>
     </View>
   );
@@ -242,9 +307,9 @@ function ReceivedCard({
 
 const styles = StyleSheet.create({
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
     gap: Spacing.three,
   },
   statusPill: {
@@ -259,15 +324,15 @@ const styles = StyleSheet.create({
     gap: Spacing.four,
   },
   receivePanel: {
-    alignItems: 'center',
+    alignItems: "center",
     minHeight: 420,
-    justifyContent: 'center',
+    justifyContent: "center",
   },
   wideButton: {
-    alignSelf: 'stretch',
+    alignSelf: "stretch",
   },
   receivedCard: {
-    alignSelf: 'stretch',
+    alignSelf: "stretch",
     gap: Spacing.three,
   },
   payloadBox: {
@@ -280,8 +345,8 @@ const styles = StyleSheet.create({
     lineHeight: 26,
   },
   receivedActions: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexDirection: "row",
+    flexWrap: "wrap",
     gap: Spacing.two,
   },
 });
