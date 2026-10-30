@@ -240,35 +240,36 @@ function ReceivedCard({
   );
 }
 
+
 const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'flex-start',
+    alignItems: 'center',
     gap: Spacing.three,
   },
   statusPill: {
     paddingHorizontal: Spacing.three,
     paddingVertical: Spacing.one,
     borderRadius: Spacing.four,
-    marginTop: Spacing.two,
   },
   panel: {
     borderRadius: Spacing.four,
-    padding: Spacing.four,
-    gap: Spacing.four,
+    padding: Spacing.three,
+    gap: Spacing.three,
+    flexShrink: 1,
   },
   receivePanel: {
-    alignItems: 'center',
-    minHeight: 420,
-    justifyContent: 'center',
-  },
+  alignItems: 'center',
+  minHeight: 300,
+  justifyContent: 'center',
+},
   wideButton: {
     alignSelf: 'stretch',
   },
   receivedCard: {
     alignSelf: 'stretch',
-    gap: Spacing.three,
+    gap: Spacing.two,
   },
   payloadBox: {
     borderWidth: 1,

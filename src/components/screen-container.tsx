@@ -8,13 +8,21 @@ import { useTheme } from '@/hooks/use-theme';
 // The web tab bar floats over the top of the screen instead of the bottom.
 const WEB_TOP_OFFSET = 96;
 
+
 export function useScreenPadding(withTabBar = true) {
   const insets = useSafeAreaInsets();
+
   return {
-    paddingTop: Platform.OS === 'web' && withTabBar ? WEB_TOP_OFFSET : insets.top + Spacing.three,
-    paddingBottom: insets.bottom + (withTabBar ? BottomTabInset : 0) + Spacing.five,
+    paddingTop:
+      Platform.OS === 'web' && withTabBar
+        ? WEB_TOP_OFFSET
+        : Math.max(insets.top + Spacing.four, 60),
+
+    paddingBottom:
+      insets.bottom + (withTabBar ? BottomTabInset : 0) + Spacing.five,
   };
 }
+
 
 /** Scrollable, centered, max-width page used by the tab screens. */
 export function ScreenContainer({
@@ -38,15 +46,19 @@ export function ScreenContainer({
   );
 }
 
+
 const styles = StyleSheet.create({
   content: {
     flexGrow: 1,
     alignItems: 'center',
     paddingHorizontal: Spacing.four,
+    justifyContent: 'center',
   },
   inner: {
     width: '100%',
     maxWidth: MaxContentWidth,
     gap: Spacing.four,
+    paddingVertical: Spacing.four,
   },
 });
+

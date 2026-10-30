@@ -19,7 +19,7 @@ import { ThemedView } from './themed-view';
 export default function AppTabs() {
   return (
     <Tabs>
-      <TabSlot style={{ height: '100%' }} />
+      <TabSlot style={{ flex: 1 }} />
       <TabList asChild>
         <CustomTabList>
           <TabTrigger name="index" href="/" asChild>
@@ -39,30 +39,47 @@ export default function AppTabs() {
   );
 }
 
+
 export function TabButton({
   children,
   isFocused,
   icon,
+  ref: _ref,
   ...props
 }: TabTriggerSlotProps & { icon: AppIconName }) {
   const colors = useTheme();
   const foreground = isFocused ? colors.onPrimary : colors.textSecondary;
 
   return (
-    <Pressable {...props} style={({ pressed }) => pressed && styles.pressed}>
+    <Pressable
+      {...props}
+      style={({ pressed }) =>
+        pressed ? styles.pressed : undefined
+      }
+    >
       <View
         style={[
           styles.tabButtonView,
-          { backgroundColor: isFocused ? colors.primary : 'transparent' },
-        ]}>
+          {
+            backgroundColor: isFocused
+              ? colors.primary
+              : 'transparent',
+          },
+        ]}
+      >
         <AppIcon name={icon} size={16} color={foreground} />
-        <ThemedText type="smallBold" style={{ color: foreground }}>
+
+        <ThemedText
+          type="smallBold"
+          style={{ color: foreground }}
+        >
           {children}
         </ThemedText>
       </View>
     </Pressable>
   );
 }
+
 
 export function CustomTabList(props: TabListProps) {
   const colors = useTheme();
@@ -83,14 +100,13 @@ export function CustomTabList(props: TabListProps) {
 }
 
 const styles = StyleSheet.create({
-  tabListContainer: {
-    position: 'absolute',
-    width: '100%',
-    padding: Spacing.three,
-    justifyContent: 'center',
-    alignItems: 'center',
-    flexDirection: 'row',
-  },
+ tabListContainer: {
+  width: '100%',
+  padding: Spacing.three,
+  justifyContent: 'center',
+  alignItems: 'center',
+  flexDirection: 'row',
+},
   innerContainer: {
     paddingVertical: Spacing.two,
     paddingHorizontal: Spacing.four,

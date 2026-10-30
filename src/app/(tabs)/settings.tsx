@@ -1,3 +1,4 @@
+import { useTheme } from '@/hooks/use-theme';
 import { useState, type ReactNode } from 'react';
 import {
     Alert,
@@ -7,17 +8,19 @@ import {
     Switch,
     View,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AppIcon } from '@/components/app-icon';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
-import { useTheme } from '@/hooks/use-theme';
+import React from 'react';
 
 type ThemeMode = 'system' | 'light' | 'dark';
 type TransmissionSpeed = 'slow' | 'normal' | 'fast';
 
 export default function SettingsScreen() {
+  const insets = useSafeAreaInsets();
   const theme = useTheme();
 
   const [themeMode, setThemeMode] = useState<ThemeMode>('system');
@@ -118,8 +121,15 @@ export default function SettingsScreen() {
 
   return (
     <ScrollView
-      style={{ backgroundColor: theme.background }}
-      contentContainerStyle={styles.container}>
+  style={{ backgroundColor: theme.background }}
+  contentContainerStyle={[
+    styles.container,
+    {
+      paddingTop: Math.max(insets.top + Spacing.four, 60),
+      paddingBottom: insets.bottom + 110,
+    },
+  ]}
+  showsVerticalScrollIndicator={false}>
 
       <View style={styles.header}>
         <ThemedText type="title">Settings</ThemedText>
@@ -346,10 +356,10 @@ export default function SettingsScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    padding: Spacing.four,
-    paddingBottom: 110,
-    gap: Spacing.three,
-  },
+  padding: Spacing.four,
+  paddingBottom: 110,
+  gap: Spacing.three,
+},
   header: {
     gap: Spacing.one,
     marginBottom: Spacing.two,
