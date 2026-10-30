@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { AccessibilityInfo, Button, StyleSheet, View } from "react-native";
+import ggwave_factory from "ggwave";
 
 import { ConfirmSheet, type ConfirmRequest } from "@/components/confirm-sheet";
 import { LinkNote } from "@/components/link-note";
@@ -22,6 +23,7 @@ import type { TransmissionOrigin } from "@/types/transmission";
 import { formatRelativeTime } from "@/utils/format";
 import { getSafeUrl, sanitizePayload } from "@/utils/payload";
 import { findSensitiveReasons } from "@/utils/sensitive";
+import { playWaveform } from "@/utils/ggwave-utils";
 
 type Mode = "send" | "receive";
 
@@ -81,7 +83,7 @@ export default function ShareScreen() {
       broadcast.reset();
   };
 
-  const onBroadcastPress = () => {
+  const onBroadcastPress = async () => {
     if (isBroadcasting) {
       broadcast.stop();
       return;
@@ -99,11 +101,37 @@ export default function ShareScreen() {
       });
       return;
     }
+    playWaveform(await testGGWAVE(payload));
     broadcast.start(payload, origin);
   };
 
-  async function testGGWAVE() {
-    console.log("Testing GGWAVE");
+  async function testGGWAVE(payload: string): Promise<Int8Array> {
+    return ggwave_factory().then((ggwave) => {
+      // create ggwave instance with default parameters
+      let parameters = ggwave.getDefaultParameters();
+
+      parameters.operatingMode |= ggwave.GGWAVE_OPERATING_MODE_USE_DSS;
+
+      let instance = ggwave.init(parameters);
+      console.log("instance: " + instance);
+
+      // generate audio waveform for string "hello js"
+      let waveform = ggwave.encode(
+        instance,
+        payload,
+        ggwave.ProtocolId.GGWAVE_PROTOCOL_AUDIBLE_FAST,
+        10,
+      );
+
+      // decode the audio waveform back to text
+      let res = ggwave.decode(instance, waveform);
+
+      if (new TextDecoder("utf-8").decode(res) !== payload) {
+        process.exit(1);
+      }
+
+      return waveform;
+    });
   }
 
   return (
