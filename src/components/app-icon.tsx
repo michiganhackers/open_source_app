@@ -1,9 +1,11 @@
+
 import { SymbolView, type SymbolViewProps } from 'expo-symbols';
 import type { ColorValue } from 'react-native';
 
 const ICONS = {
   share: { ios: 'waveform', android: 'graphic_eq', web: 'graphic_eq' },
   history: { ios: 'clock.arrow.circlepath', android: 'history', web: 'history' },
+  settings: { ios: 'gearshape', android: 'settings', web: 'settings' },
   sent: { ios: 'arrow.up', android: 'arrow_upward', web: 'arrow_upward' },
   received: { ios: 'arrow.down', android: 'arrow_downward', web: 'arrow_downward' },
   copy: { ios: 'doc.on.doc', android: 'content_copy', web: 'content_copy' },

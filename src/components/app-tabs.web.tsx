@@ -1,12 +1,12 @@
 import {
-  Tabs,
   TabList,
-  TabTrigger,
-  TabSlot,
-  TabTriggerSlotProps,
   TabListProps,
+  Tabs,
+  TabSlot,
+  TabTrigger,
+  TabTriggerSlotProps,
 } from 'expo-router/ui';
-import { Pressable, View, StyleSheet } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 
 import { AppIcon, type AppIconName } from '@/components/app-icon';
 import { MaxContentWidth, Spacing } from '@/constants/theme';
@@ -21,12 +21,17 @@ export default function AppTabs() {
       <TabSlot style={{ height: '100%' }} />
       <TabList asChild>
         <CustomTabList>
-          <TabTrigger name="index" href="/" asChild>
-            <TabButton icon="share">Share</TabButton>
-          </TabTrigger>
-          <TabTrigger name="history" href="/history" asChild>
-            <TabButton icon="history">History</TabButton>
-          </TabTrigger>
+        <TabTrigger name="index" href="/" asChild>
+    <TabButton icon="share">Share</TabButton>
+      </TabTrigger>
+
+            <TabTrigger name="history" href="/history" asChild>
+        <TabButton icon="history">History</TabButton>
+        </TabTrigger>
+
+        <TabTrigger name="settings" href={'/settings' as any} asChild>
+    <TabButton icon="settings">Settings</TabButton>
+      </TabTrigger>
         </CustomTabList>
       </TabList>
     </Tabs>
