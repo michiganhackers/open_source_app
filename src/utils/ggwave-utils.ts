@@ -87,5 +87,5 @@ export async function listen_ggwaveform(onMessage: (text: string) => void) {
 }
 
 export async function play_string_as_ggwave(payload: string) {
-  await play_ggwaveform(await string_to_ggwaveform(payload));
+  play_ggwaveform(await string_to_ggwaveform(payload));
 }

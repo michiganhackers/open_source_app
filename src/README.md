@@ -29,3 +29,9 @@ Type declarations for ggwave
 ### /utils/ggwave-utils.ts
 
 Helper functions for ggwave to be used in the app
+
+### /utils/format.ts
+
+### /utils/payload.ts
+
+### /utils/sensitive.ts
