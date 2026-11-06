@@ -5,14 +5,13 @@ import { Handler } from "./abstract";
 export class BroadcastHandler extends Handler {
   protected async runCore(payload: string): Promise<void> {
     const waveform = await string_to_ggwaveform(payload!);
+    this.duration = (waveform.length / 48000) * 1000;
     play_ggwaveform(waveform);
     // Wait for playback to finish
-    await new Promise<void>((resolve) =>
-      setTimeout(resolve, (waveform.length / 48000) * 1000),
-    );
+    await new Promise<void>((resolve) => setTimeout(resolve, this.duration));
   }
 
-  get_result(): Promise<boolean> {
-    return Promise.resolve(this.expired);
+  get_result(): boolean {
+    return this.expired;
   }
 }

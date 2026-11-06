@@ -26,7 +26,7 @@ export class ListenerHandler extends Handler {
     this.stopListening = null;
   }
 
-  get_result(): Promise<string | null> {
-    return Promise.resolve(this.decoded);
+  get_result(): string | null {
+    return this.decoded;
   }
 }

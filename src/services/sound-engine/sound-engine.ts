@@ -6,14 +6,14 @@ export class SoundEngine {
   listener = new ListenerHandler();
   broadcaster = new BroadcastHandler();
 
-  start_broadcast(args: any): void {
+  start_broadcast(args: string): void {
     this.broadcaster.run(args);
   }
   stop_broadcast(): void {
-    this.stop_broadcast();
+    this.broadcaster.stop();
   }
   status_broadcast(): string {
-    if (this.broadcaster.result) {
+    if (this.broadcaster.expired && !this.broadcaster.isRunning) {
       return "Broadcast sent!";
     }
     if (this.broadcaster.isRunning) {
@@ -30,7 +30,7 @@ export class SoundEngine {
     this.listener.stop();
   }
   status_listen(): string {
-    if (this.listener.result !== null) {
+    if (this.listener.get_result() !== null) {
       return "Message received!";
     }
     if (this.listener.isRunning) {
