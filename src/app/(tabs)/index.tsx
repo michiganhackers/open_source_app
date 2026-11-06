@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { AccessibilityInfo, StyleSheet, View } from "react-native";
-import { listen_ggwaveform, play_string_as_ggwave } from "@/utils/ggwave-utils";
 import { ConfirmSheet, type ConfirmRequest } from "@/components/confirm-sheet";
 import { LinkNote } from "@/components/link-note";
 import { PayloadInput } from "@/components/payload-input";
@@ -15,6 +14,7 @@ import { MAX_PAYLOAD_LENGTH } from "@/constants/limits";
 import { Spacing } from "@/constants/theme";
 import { usePayloadActions } from "@/hooks/use-payload-actions";
 import { useTheme } from "@/hooks/use-theme";
+import { soundEngine } from "@/services/sound-engine/sound-engine";
 import { useShareDraft, type ShareDraft } from "@/state/share-draft";
 import type { TransmissionOrigin } from "@/types/transmission";
 import { formatRelativeTime } from "@/utils/format";
@@ -22,6 +22,7 @@ import { getSafeUrl, sanitizePayload } from "@/utils/payload";
 import { findSensitiveReasons } from "@/utils/sensitive";
 
 type Mode = "send" | "receive";
+type ReceivedMessage = { text: string; receivedAt: string };
 
 const MODE_OPTIONS = [
   { value: "send", label: "Send" },
@@ -39,15 +40,50 @@ export default function ShareScreen() {
   const [sensitiveCheck, setSensitiveCheck] = useState<ConfirmRequest | null>(
     null,
   );
+  const [uiStatus, setUiStatus] = useState<
+    "broadcasting" | "sent" | "listening" | "received" | "idle"
+  >("idle");
+  const [receivedMsg, setReceivedMsg] = useState<{
+    text: string;
+    receivedAt: string;
+  } | null>(null);
 
-  const isBroadcasting = broadcast.status === "broadcasting";
-  const isListening = listen.status === "listening";
+  const isBroadcasting = uiStatus === "broadcasting";
+  const isListening = uiStatus === "listening";
   const busy = isBroadcasting || isListening;
   const statusLabel = isBroadcasting
     ? "Broadcasting"
     : isListening
       ? "Listening"
       : "Idle";
+
+  // Poll soundEngine status and sync to React state
+  useEffect(() => {
+    const tick = () => {
+      const bs = soundEngine.status_broadcast();
+      const ls = soundEngine.status_listen();
+      if (bs === "Broadcasting...") {
+        setUiStatus("broadcasting");
+      } else if (bs === "Broadcast sent!") {
+        setUiStatus("sent");
+      } else if (ls === "Listening...") {
+        setUiStatus("listening");
+      } else if (ls === "Message received!") {
+        soundEngine.received = {
+          text: soundEngine.listener.get_result().decoded!,
+          receivedAt:
+            soundEngine.listener.get_result().decodedAt ||
+            new Date().toISOString(),
+        };
+        setReceivedMsg(soundEngine.received);
+        setUiStatus("received");
+      } else {
+        setUiStatus("idle");
+      }
+    };
+    const id = setInterval(tick, 100);
+    return () => clearInterval(id);
+  }, []);
 
   // Apply a re-broadcast draft during render (React's "adjust state on prop change" pattern),
   // then clear it from the shared store so it isn't re-applied on remount.
@@ -73,13 +109,12 @@ export default function ShareScreen() {
   const onChangeText = (value: string) => {
     setText(value);
     if (value.trim().length === 0) setOrigin("local");
-    if (broadcast.status === "sent" || broadcast.status === "error")
-      broadcast.reset();
+    if (uiStatus === "sent") soundEngine.broadcaster.reset();
   };
 
   const onBroadcastPress = async () => {
     if (isBroadcasting) {
-      broadcast.stop();
+      soundEngine.stop_broadcast();
       return;
     }
     const payload = sanitizePayload(text);
@@ -95,16 +130,7 @@ export default function ShareScreen() {
       });
       return;
     }
-    play_string_as_ggwave(payload);
-    broadcast.start(payload, origin);
-  };
-
-  const onMessage = (text: string) => {
-    return;
-  };
-
-  const onListenPress = async () => {
-    listen_ggwaveform(onMessage);
+    soundEngine.start_broadcast(payload);
   };
 
   return (
@@ -154,12 +180,15 @@ export default function ShareScreen() {
               This text came from an unverified sender.
             </ThemedText>
           )}
-          <Waveform active={isBroadcasting} progress={broadcast.progress} />
+          <Waveform
+            active={isBroadcasting}
+            progress={soundEngine.broadcaster.getProgress()}
+          />
           <PrimaryButton
             label={
               isBroadcasting
                 ? "Stop"
-                : broadcast.status === "sent"
+                : uiStatus === "sent"
                   ? "Sent!"
                   : "Broadcast"
             }
@@ -178,41 +207,39 @@ export default function ShareScreen() {
           type="backgroundElement"
           style={[styles.panel, styles.receivePanel]}
         >
-          {listen.status === "received" && listen.received ? (
+          {uiStatus === "received" && soundEngine.received ? (
             <ReceivedCard
-              message={listen.received}
-              onCopy={() => copy(listen.received!.payload)}
-              onOpen={() => requestOpen(listen.received!.payload)}
-              onListenAgain={listen.start}
-              onDismiss={listen.dismiss}
+              message={{
+                text: soundEngine.received!.text,
+                receivedAt: soundEngine.received!.receivedAt,
+              }}
+              onCopy={() => copy(soundEngine.received!.text)}
+              onOpen={() => requestOpen(soundEngine.received!.text)}
+              onListenAgain={soundEngine.start_listen}
+              onDismiss={soundEngine.dismiss}
             />
           ) : (
             <>
               <PulseRing active={isListening} />
               <ThemedText
                 type="smallBold"
-                themeColor={
-                  listen.status === "error" ? undefined : "textSecondary"
-                }
-                style={
-                  listen.status === "error"
-                    ? { color: theme.danger }
-                    : undefined
-                }
+                themeColor="textSecondary"
                 accessibilityLiveRegion="polite"
               >
                 {isListening
-                  ? `Listening... ${listen.secondsLeft}s`
-                  : listen.status === "error"
-                    ? "Couldn't reach the mock server. Try again."
-                    : "Tap Listen to receive nearby messages"}
+                  ? "Listening..."
+                  : "Tap Listen to receive nearby messages"}
               </ThemedText>
               <PrimaryButton
                 label={isListening ? "Stop" : "Listen"}
                 icon={isListening ? "close" : "listen"}
                 variant={isListening ? "outline" : "filled"}
                 size="large"
-                onPress={isListening ? listen.stop : listen.start}
+                onPress={
+                  isListening
+                    ? soundEngine.stop_listen
+                    : soundEngine.start_listen
+                }
                 accessibilityLabel={
                   isListening ? "Stop listening" : "Start listening"
                 }
@@ -229,7 +256,7 @@ export default function ShareScreen() {
         onConfirm={() => {
           setSensitiveCheck(null);
           const payload = sanitizePayload(text);
-          if (payload) broadcast.start(payload, origin);
+          if (payload) soundEngine.broadcaster.run(payload);
         }}
       />
       {linkSheet}
@@ -251,7 +278,7 @@ function ReceivedCard({
   onDismiss: () => void;
 }) {
   const theme = useTheme();
-  const canOpen = getSafeUrl(message.payload) !== null;
+  const canOpen = getSafeUrl(message.text) !== null;
 
   return (
     <View style={styles.receivedCard}>
@@ -265,13 +292,13 @@ function ReceivedCard({
         ]}
       >
         <ThemedText selectable style={styles.receivedPayload}>
-          {message.payload}
+          {message.text}
         </ThemedText>
       </View>
       <ThemedText type="small" themeColor="textSecondary">
         Unverified sender · {formatRelativeTime(message.receivedAt)}
       </ThemedText>
-      <LinkNote payload={message.payload} />
+      <LinkNote payload={message.text} />
       <View style={styles.receivedActions}>
         <PrimaryButton
           label="Copy"

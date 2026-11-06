@@ -6,13 +6,16 @@ export class SoundEngine {
   listener = new ListenerHandler();
   broadcaster = new BroadcastHandler();
 
-  start_broadcast(args: string): void {
+  // Result of the last received message — set when status_listen() returns "Message received!"
+  received: { text: string; receivedAt: string } | null = null;
+
+  start_broadcast = (args: string): void => {
     this.broadcaster.run(args);
-  }
-  stop_broadcast(): void {
+  };
+  stop_broadcast = (): void => {
     this.broadcaster.stop();
-  }
-  status_broadcast(): string {
+  };
+  status_broadcast = (): string => {
     if (this.broadcaster.expired && !this.broadcaster.isRunning) {
       return "Broadcast sent!";
     }
@@ -21,16 +24,23 @@ export class SoundEngine {
     } else {
       return "Standing by...";
     }
-  }
+  };
 
-  start_listen(): void {
+  start_listen = (): void => {
+    this.listener.reset();
     this.listener.run();
-  }
-  stop_listen(): void {
+  };
+  stop_listen = (): void => {
     this.listener.stop();
-  }
-  status_listen(): string {
-    if (this.listener.get_result() !== null) {
+    this.listener.isRunning = false;
+    this.listener.expired = false;
+    this.listener.result = {
+      decoded: null,
+      decodedAt: null,
+    };
+  };
+  status_listen = (): string => {
+    if (this.listener.get_result().decoded !== null) {
       return "Message received!";
     }
     if (this.listener.isRunning) {
@@ -38,7 +48,10 @@ export class SoundEngine {
     } else {
       return "Standing by...";
     }
-  }
+  };
+  dismiss = (): void => {
+    this.received = null;
+  };
 }
 
 export const soundEngine: SoundEngine = new SoundEngine();

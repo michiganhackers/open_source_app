@@ -8,7 +8,9 @@ export class BroadcastHandler extends Handler {
     this.duration = (waveform.length / 48000) * 1000;
     play_ggwaveform(waveform);
     // Wait for playback to finish
-    await new Promise<void>((resolve) => setTimeout(resolve, this.duration));
+    await new Promise<void>((resolve: any) =>
+      setTimeout(resolve, this.duration),
+    );
   }
 
   get_result(): boolean {
