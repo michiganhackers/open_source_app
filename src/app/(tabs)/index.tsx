@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { AccessibilityInfo, Button, StyleSheet, View } from "react-native";
-import { play_string_as_ggwave } from "@/utils/ggwave-utils";
+import { AccessibilityInfo, StyleSheet, View } from "react-native";
+import { listen_ggwaveform, play_string_as_ggwave } from "@/utils/ggwave-utils";
 import { ConfirmSheet, type ConfirmRequest } from "@/components/confirm-sheet";
 import { LinkNote } from "@/components/link-note";
 import { PayloadInput } from "@/components/payload-input";
@@ -13,8 +13,6 @@ import { ThemedView } from "@/components/themed-view";
 import { Waveform } from "@/components/waveform";
 import { MAX_PAYLOAD_LENGTH } from "@/constants/limits";
 import { Spacing } from "@/constants/theme";
-import { useBroadcast } from "@/hooks/use-broadcast";
-import { useListen, type ReceivedMessage } from "@/hooks/use-listen";
 import { usePayloadActions } from "@/hooks/use-payload-actions";
 import { useTheme } from "@/hooks/use-theme";
 import { useShareDraft, type ShareDraft } from "@/state/share-draft";
@@ -32,8 +30,6 @@ const MODE_OPTIONS = [
 
 export default function ShareScreen() {
   const theme = useTheme();
-  const broadcast = useBroadcast();
-  const listen = useListen();
   const { draft, clearDraft } = useShareDraft();
   const { copy, requestOpen, linkSheet } = usePayloadActions();
 
@@ -101,6 +97,14 @@ export default function ShareScreen() {
     }
     play_string_as_ggwave(payload);
     broadcast.start(payload, origin);
+  };
+
+  const onMessage = (text: string) => {
+    return;
+  };
+
+  const onListenPress = async () => {
+    listen_ggwaveform(onMessage);
   };
 
   return (
