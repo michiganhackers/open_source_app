@@ -3,7 +3,7 @@ export abstract class Handler {
   expired = false;
   result: any = null;
   stop(): void {}
-  async run(args: any): Promise<void> {
+  async run(args: any = null): Promise<void> {
     if (this.isRunning || this.expired) return;
     this.isRunning = true;
     this.result = await this.runCore(args);
